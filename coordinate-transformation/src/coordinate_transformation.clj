@@ -25,12 +25,14 @@
    If the arguments are the same as the last call,
    the memoized result is returned."
   [f]
-  (let [memo (atom {})] ;; set up memo
+  (let [prev-args (atom nil)
+        prev-retval (atom nil)] ;; set up memo
     (fn [& args]
-      (if (contains? @memo args) ;; check for relevant entry in memo given args 
-        (get @memo args) ;; return result 
+      (if (= @prev-args args) ;; check for relevant entry in memo given args 
+        @prev-retval ;; return result 
         (let [retval (apply f args)]
-          (swap! memo assoc args retval) ;; save return vale
+          (reset! prev-args args)
+          (reset! prev-retval retval) ;; save return value
           retval
           )
         )
